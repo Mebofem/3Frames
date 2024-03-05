@@ -28,7 +28,7 @@ namespace WpfApp2
 
     public class DeckLinkOutputDevice : IDeckLinkVideoOutputCallback
     {
-        const uint kMinimumVideoPrerollSize = 2;  
+        const uint kMinimumVideoPrerollSize = 2;
 
         enum PlaybackState { Idle, Prerolling, Running };
 
@@ -185,7 +185,7 @@ namespace WpfApp2
             }
             catch (COMException comEx)
             {
-                
+
             }
         }
 
@@ -312,11 +312,6 @@ namespace WpfApp2
         {
             ScheduledFrameCompleted?.Invoke(this, new DeckLinkScheduledFrameCompletedEventArgs(completedFrame, result));
         }
-
-        //void IDeckLinkVideoOutputCallback.ScheduledPlaybackHasStopped()
-        //{
-        //    m_stopScheduledPlaybackEvent.Set();
-        //}
         #endregion
     }
 

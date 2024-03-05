@@ -64,7 +64,7 @@ namespace WpfApp2
             m_supportsInputFormatDetection = Convert.ToBoolean(inputFormatDetectionAttribute);
 
             m_deckLinkInput = m_deckLink as IDeckLinkInput;
- 
+
             m_deckLinkConfiguration = m_deckLink as IDeckLinkConfiguration;
 
             m_displayName = DeckLinkDeviceTools.GetDisplayLabel(m_deckLink);
@@ -225,16 +225,12 @@ namespace WpfApp2
 
             m_deckLinkInput.DisableVideoInput();
 
-            //m_deckLinkInput.SetScreenPreviewCallback(null);
+            m_deckLinkInput.SetScreenPreviewCallback(null);
             m_deckLinkInput.SetCallback(null);
 
             m_currentlyCapturing = false;
         }
-
-
     }
-
-
 
     public static class DeckLinkDeviceTools
     {
