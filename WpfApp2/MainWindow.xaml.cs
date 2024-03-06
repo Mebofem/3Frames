@@ -3,6 +3,7 @@ using DirectShowLib;
 using OpenCvSharp;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -18,6 +19,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Brush = System.Drawing.Brush;
+using Brushes = System.Drawing.Brushes;
+using Color = System.Drawing.Color;
 
 namespace WpfApp2
 {
@@ -274,6 +278,8 @@ namespace WpfApp2
             return uyvyFrame;
         }
 
+
+
         private Mat ConvertUYVYToBGR(Mat uyvyFrame)
         {
             Mat bgrFrame = new Mat();
@@ -366,6 +372,39 @@ namespace WpfApp2
         }
 
 
+        //private void ProcessAndOutputCombinedFrame()
+        //{
+        //    lock (frameLock)
+        //    {
+        //        if (latestCameraFrame != null && latestDeckLinkFrame1 != null && latestDeckLinkFrame2 != null)
+        //        {
+        //            using (Mat finalFrame = new Mat(1080, 1920, MatType.CV_8UC3, new Scalar(0, 0, 0)))
+        //            {
+        //                var rectDeckLink1 = new OpenCvSharp.Rect(0, 0, latestDeckLinkFrame1.Width, latestDeckLinkFrame1.Height);
+        //                latestDeckLinkFrame1.CopyTo(finalFrame[rectDeckLink1]);
+
+        //                int startX = latestDeckLinkFrame1.Width;
+        //                var rectCamera = new OpenCvSharp.Rect(startX, 200, latestCameraFrame.Width, latestCameraFrame.Height);
+        //                latestCameraFrame.CopyTo(finalFrame[rectCamera]);
+
+        //                var rectDeckLink2 = new OpenCvSharp.Rect(startX, 640, latestDeckLinkFrame2.Width, latestDeckLinkFrame2.Height);
+        //                latestDeckLinkFrame2.CopyTo(finalFrame[rectDeckLink2]);
+
+        //                Mat uyvyFrame = ConvertBGRToUYVY(finalFrame);
+        //                m_outputDevice.ScheduleFrame(uyvyFrame);
+        //                uyvyFrame.Dispose();
+        //            }
+
+        //            latestCameraFrame.Dispose();
+        //            latestDeckLinkFrame1.Dispose();
+        //            latestDeckLinkFrame2.Dispose();
+        //            latestCameraFrame = null;
+        //            latestDeckLinkFrame1 = null;
+        //            latestDeckLinkFrame2 = null;
+        //        }
+        //    }
+        //}
+
         private void ProcessAndOutputCombinedFrame()
         {
             lock (frameLock)
@@ -384,6 +423,21 @@ namespace WpfApp2
                         var rectDeckLink2 = new OpenCvSharp.Rect(startX, 640, latestDeckLinkFrame2.Width, latestDeckLinkFrame2.Height);
                         latestDeckLinkFrame2.CopyTo(finalFrame[rectDeckLink2]);
 
+                        int lineXRight = 1440;
+                        int lineXMid = lineXRight + 240;
+                        int lineXLeft = lineXRight + 480;
+
+                        // Drawing lines at the specified positions
+                        Cv2.Line(finalFrame, new OpenCvSharp.Point(1440, 0), new OpenCvSharp.Point(1440, 200), new Scalar(0, 255, 0), 2);
+                        Cv2.Line(finalFrame, new OpenCvSharp.Point(1440, 910), new OpenCvSharp.Point(1440, 1080), new Scalar(0, 255, 0), 2);
+                        Cv2.Line(finalFrame, new OpenCvSharp.Point(1680, 0), new OpenCvSharp.Point(1680, 200), new Scalar(0, 255, 0), 2);
+                        Cv2.Line(finalFrame, new OpenCvSharp.Point(1680, 910), new OpenCvSharp.Point(1680, 1080), new Scalar(0, 255, 0), 2);
+                        Cv2.Line(finalFrame, new OpenCvSharp.Point(1920, 0), new OpenCvSharp.Point(1920, 200), new Scalar(0, 255, 0), 2);
+                        Cv2.Line(finalFrame, new OpenCvSharp.Point(1919, 910), new OpenCvSharp.Point(1919, 1080), new Scalar(0, 255, 0), 2);
+
+
+                        PlaceTextInColumns(finalFrame);
+
                         Mat uyvyFrame = ConvertBGRToUYVY(finalFrame);
                         m_outputDevice.ScheduleFrame(uyvyFrame);
                         uyvyFrame.Dispose();
@@ -397,6 +451,67 @@ namespace WpfApp2
                     latestDeckLinkFrame2 = null;
                 }
             }
+        }
+
+        //private void PlaceTextInColumns(Mat frame)
+        //{
+        //    // Convert the OpenCV Mat to a Bitmap
+        //    Bitmap bmp = OpenCvSharp.Extensions.BitmapConverter.ToBitmap(frame);
+
+        //    using (Graphics g = Graphics.FromImage(bmp))
+        //    {
+        //        int startY = 700; // Starting Y position for the text
+        //        int stepY = 30;   // Step for Y position for each new line
+
+        //        // Define your lines and respective font sizes
+        //        string[] lines = { "QWER", "North /", "Uhrnfm /.", "!@#$% \" \" \" /",
+        //                    "?>< < < > > >", "UIYEBJAk", "&^*$@!$%^", "j f n f fms few rwe",
+        //                    "rkw;ek;l 'we;", "kl;fkw;k;lkrw", "}{POOR", "fksl;kkl;sj" };
+        //        float[] fontSizes = { 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9 };
+
+        //        // Iterate over lines
+        //        for (int i = 0; i < lines.Length; i++)
+        //        {
+        //            using (Font font = new Font("Arial", fontSizes[i]))
+        //            {
+        //                g.DrawString(lines[i], font, Brushes.Green, new PointF(1445, startY + i * stepY));
+        //            }
+        //        }
+        //    }
+
+        //    // Convert the updated bitmap back to a Mat
+        //    Mat updatedFrame = OpenCvSharp.Extensions.BitmapConverter.ToMat(bmp);
+        //    frame.Dispose(); // Dispose the original frame
+        //    frame = updatedFrame; // Update the original frame reference
+        //}
+
+        private void PlaceTextInColumns(Mat frame)
+        {
+            int startY = 700;
+            int stepY = 30; // Vertical space between lines, adjust as needed
+
+            double[] fontScales = { 1.2, 1.15, 1.1, 1.05, 1.0, 0.95, 0.9, 0.85, 0.8, 0.75, 0.7, 0.65 }; // Define font scales
+
+            string[] lines = {
+    "QWER", "North /", "Uhrnfm /.", "!@#$% \" \" \" /",
+    "?>< < < > > >", "UIYEBJAk", "&^*$@!$%^", "j f n f fms few rwe",
+    "rkw;ek;l 'we;", "kl;fkw;k;lkrw", "}{POOR", "fksl;kkl;sj"
+};
+
+            for (int i = 0; i < lines.Length; i++)
+            {
+                Cv2.PutText(
+                    frame,
+                    lines[i],
+                    new OpenCvSharp.Point(1445, startY + (i * stepY)),
+                    HersheyFonts.HersheySimplex,
+                    fontScales[i],
+                    new Scalar(0, 255, 0), // Green color for the text
+                    2, // Thickness
+                    LineTypes.AntiAlias
+                );
+            }
+
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
