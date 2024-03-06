@@ -453,66 +453,43 @@ namespace WpfApp2
             }
         }
 
-        //private void PlaceTextInColumns(Mat frame)
-        //{
-        //    // Convert the OpenCV Mat to a Bitmap
-        //    Bitmap bmp = OpenCvSharp.Extensions.BitmapConverter.ToBitmap(frame);
-
-        //    using (Graphics g = Graphics.FromImage(bmp))
-        //    {
-        //        int startY = 700; // Starting Y position for the text
-        //        int stepY = 30;   // Step for Y position for each new line
-
-        //        // Define your lines and respective font sizes
-        //        string[] lines = { "QWER", "North /", "Uhrnfm /.", "!@#$% \" \" \" /",
-        //                    "?>< < < > > >", "UIYEBJAk", "&^*$@!$%^", "j f n f fms few rwe",
-        //                    "rkw;ek;l 'we;", "kl;fkw;k;lkrw", "}{POOR", "fksl;kkl;sj" };
-        //        float[] fontSizes = { 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9 };
-
-        //        // Iterate over lines
-        //        for (int i = 0; i < lines.Length; i++)
-        //        {
-        //            using (Font font = new Font("Arial", fontSizes[i]))
-        //            {
-        //                g.DrawString(lines[i], font, Brushes.Green, new PointF(1445, startY + i * stepY));
-        //            }
-        //        }
-        //    }
-
-        //    // Convert the updated bitmap back to a Mat
-        //    Mat updatedFrame = OpenCvSharp.Extensions.BitmapConverter.ToMat(bmp);
-        //    frame.Dispose(); // Dispose the original frame
-        //    frame = updatedFrame; // Update the original frame reference
-        //}
+        
 
         private void PlaceTextInColumns(Mat frame)
         {
-            int startY = 700;
-            int stepY = 30; // Vertical space between lines, adjust as needed
+            int startY = 200; // Starting Y position for the text
+            int stepY = 100;  // Vertical space between lines, set to 100px as requested
 
-            double[] fontScales = { 1.2, 1.15, 1.1, 1.05, 1.0, 0.95, 0.9, 0.85, 0.8, 0.75, 0.7, 0.65 }; // Define font scales
+            // Define font scales starting from small to large
+            double[] fontScales = { 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2, 1.3 };
 
             string[] lines = {
-    "QWER", "North /", "Uhrnfm /.", "!@#$% \" \" \" /",
-    "?>< < < > > >", "UIYEBJAk", "&^*$@!$%^", "j f n f fms few rwe",
-    "rkw;ek;l 'we;", "kl;fkw;k;lkrw", "}{POOR", "fksl;kkl;sj"
-};
+        "QWER", "North /", "Uhrnfm /.", "!@#$% \" \" \" /",
+        "?>< < < > > >", "UIYEBJAk", "&^*$@!$%^", "j f n f fms few rwe",
+        "rkw;ek;l 'we;", 
+    };
 
             for (int i = 0; i < lines.Length; i++)
             {
+                // Use the corresponding font scale for each line
+                double fontScale = fontScales[i];
+                // Calculate the y-coordinate for each line based on the index and stepY
+                int yPosition = startY + i * stepY;
+
                 Cv2.PutText(
                     frame,
                     lines[i],
-                    new OpenCvSharp.Point(1445, startY + (i * stepY)),
+                    new OpenCvSharp.Point(1475, yPosition),
                     HersheyFonts.HersheySimplex,
-                    fontScales[i],
-                    new Scalar(0, 255, 0), // Green color for the text
-                    2, // Thickness
+                    fontScale,
+                    new Scalar(255, 255, 255), // White color for the text
+                    1,
                     LineTypes.AntiAlias
                 );
             }
-
         }
+
+
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
